@@ -1,0 +1,10 @@
+**
+!requirements-runtime.txt
+!services/
+!services/**
+!src/
+!src/**
+!ml_models/
+!ml_models/**
+**/__pycache__/
+**/*.py[cod]

@@ -43,6 +43,7 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
+*.cache
 nosetests.xml
 coverage.xml
 *.cover
@@ -164,3 +165,22 @@ cython_debug/
 old/
 .vscode/
 .DS_Store
+
+# Final project: local data, reference projects, and generated state
+*.csv
+*.parquet
+data/raw/
+train_ver2.csv
+task.md
+mle-project-sprint-*/
+mlruns/
+mlartifacts/
+var/
+.tmp/
+reports/figures/*.png
+ml_models/*.tmp
+reports/train.*.log
+
+# Keep the reviewed model artifact, but ignore ad-hoc model dumps
+*.joblib
+!ml_models/model.joblib

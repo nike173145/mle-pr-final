@@ -1,0 +1,22 @@
+{
+  "artifact_path": "ml_models\\model.joblib",
+  "metadata_path": "reports\\model_metadata.json",
+  "selected_experiment": "sgd_prior_0.00",
+  "validation_metrics": {
+    "map_at_7": 0.025052504162148125,
+    "precision_at_7": 0.005727726779795634,
+    "recall_at_7": 0.03070316119605118,
+    "catalog_coverage_at_7": 0.875,
+    "customers_with_purchase_rate": 0.03111301186784989,
+    "macro_pr_auc": 0.0939277120392866
+  },
+  "baseline_metrics": {
+    "map_at_7": 0.020122480012354917,
+    "precision_at_7": 0.0056513570893983595,
+    "recall_at_7": 0.03009729498556613,
+    "catalog_coverage_at_7": 0.75,
+    "customers_with_purchase_rate": 0.03111301186784989,
+    "macro_pr_auc": 0.002902048235096455
+  },
+  "mlflow_run_id": null
+}

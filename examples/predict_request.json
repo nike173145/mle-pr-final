@@ -1,0 +1,27 @@
+{
+  "ncodpers": 1375586,
+  "fecha_dato": "2016-05-28",
+  "age": 35,
+  "ind_nuevo": 0,
+  "antiguedad": 22,
+  "indrel": 1,
+  "tipodom": 1,
+  "ind_actividad_cliente": 1,
+  "renta": 87218.1,
+  "ind_empleado": "N",
+  "pais_residencia": "ES",
+  "sexo": "H",
+  "indrel_1mes": "1",
+  "tiprel_1mes": "A",
+  "indresi": "S",
+  "indext": "N",
+  "canal_entrada": "KHL",
+  "indfall": "N",
+  "cod_prov": "29",
+  "nomprov": "MALAGA",
+  "segmento": "02 - PARTICULARES",
+  "current_products": [
+    "ind_cco_fin_ult1"
+  ],
+  "top_k": 7
+}

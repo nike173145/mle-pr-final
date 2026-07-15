@@ -1,0 +1,42 @@
+{
+  "popularity": {
+    "map_at_7": 0.020122480012354917,
+    "precision_at_7": 0.0056513570893983595,
+    "recall_at_7": 0.03009729498556613,
+    "catalog_coverage_at_7": 0.75,
+    "customers_with_purchase_rate": 0.03111301186784989,
+    "macro_pr_auc": 0.002902048235096455
+  },
+  "sgd_prior_0.00": {
+    "map_at_7": 0.025052504162148125,
+    "precision_at_7": 0.005727726779795634,
+    "recall_at_7": 0.03070316119605118,
+    "catalog_coverage_at_7": 0.875,
+    "customers_with_purchase_rate": 0.03111301186784989,
+    "macro_pr_auc": 0.0939277120392866
+  },
+  "sgd_prior_0.25": {
+    "map_at_7": 0.02439877961234745,
+    "precision_at_7": 0.005712452841716178,
+    "recall_at_7": 0.03052496525179087,
+    "catalog_coverage_at_7": 0.875,
+    "customers_with_purchase_rate": 0.03111301186784989,
+    "macro_pr_auc": 0.09392771122267314
+  },
+  "sgd_prior_0.50": {
+    "map_at_7": 0.02379038895931871,
+    "precision_at_7": 0.005697178903636723,
+    "recall_at_7": 0.030418047685234685,
+    "catalog_coverage_at_7": 0.8333333333333334,
+    "customers_with_purchase_rate": 0.03111301186784989,
+    "macro_pr_auc": 0.09392771122267314
+  },
+  "sgd_prior_0.75": {
+    "map_at_7": 0.02309279426514538,
+    "precision_at_7": 0.005681904965557269,
+    "recall_at_7": 0.0303111301186785,
+    "catalog_coverage_at_7": 0.75,
+    "customers_with_purchase_rate": 0.03111301186784989,
+    "macro_pr_auc": 0.09392771122267314
+  }
+}

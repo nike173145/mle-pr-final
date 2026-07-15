@@ -1,0 +1,53 @@
+{
+  "source": "train_ver2.csv",
+  "scan_type": "full chunked scan",
+  "rows": 13647309,
+  "columns": 48,
+  "customer_profile_columns": 24,
+  "product_columns": 24,
+  "date_min": "2015-01-28",
+  "date_max": "2016-05-28",
+  "monthly_rows": {
+    "2015-01-28": 625457,
+    "2015-02-28": 627394,
+    "2015-03-28": 629209,
+    "2015-04-28": 630367,
+    "2015-05-28": 631957,
+    "2015-06-28": 632110,
+    "2015-07-28": 829817,
+    "2015-08-28": 843201,
+    "2015-09-28": 865440,
+    "2015-10-28": 892251,
+    "2015-11-28": 906109,
+    "2015-12-28": 912021,
+    "2016-01-28": 916269,
+    "2016-02-28": 920904,
+    "2016-03-28": 925076,
+    "2016-04-28": 928274,
+    "2016-05-28": 931453
+  },
+  "top_product_holdings": {
+    "ind_cco_fin_ult1": 8945588,
+    "ind_ctop_fin_ult1": 1760616,
+    "ind_recibo_ult1": 1745712,
+    "ind_ecue_fin_ult1": 1129227,
+    "ind_cno_fin_ult1": 1103620,
+    "ind_nom_pens_ult1": 810085,
+    "ind_nomina_ult1": 745961,
+    "ind_reca_fin_ult1": 716980,
+    "ind_tjcr_fin_ult1": 605786,
+    "ind_ctpp_fin_ult1": 591008
+  },
+  "rarest_product_holdings": {
+    "ind_aval_fin_ult1": 316,
+    "ind_ahor_fin_ult1": 1396,
+    "ind_cder_fin_ult1": 5376,
+    "ind_deme_fin_ult1": 22668,
+    "ind_deco_fin_ult1": 24275
+  },
+  "product_missing": {
+    "ind_nomina_ult1": 16063,
+    "ind_nom_pens_ult1": 16063,
+    "all_other_product_columns": 0
+  }
+}
