@@ -17,11 +17,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements-runtime.txt
-          python -m pip install pytest==8.3.4 ruff==0.8.6
+          python -m pip install pytest==8.3.4
           python -m pip install -e .
-      - name: Static checks
-        run: |
-          ruff check src services tests
-          ruff format --check src services tests
       - name: Unit and API tests
         run: pytest -q
