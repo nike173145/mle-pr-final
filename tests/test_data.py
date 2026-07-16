@@ -88,7 +88,7 @@ def test_read_snapshots_loads_all_rows_in_one_dataset(
     assert snapshots[ID_COLUMN].tolist() == [1, 1, 2]
 
 
-def test_read_snapshots_uses_one_read_without_chunks(
+def test_read_snapshots_uses_one_pandas_read(
     tmp_path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -113,7 +113,7 @@ def test_read_snapshots_uses_one_read_without_chunks(
 
     assert len(snapshots) == 2
     assert len(calls) == 1
-    assert "chunksize" not in calls[0]
+    assert calls[0]["low_memory"] is False
 
 
 def test_read_snapshots_can_filter_dates_after_full_read(tmp_path) -> None:
