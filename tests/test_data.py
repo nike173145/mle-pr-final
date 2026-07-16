@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pandas as pd
+import pytest
 
 from bank_recommender.constants import (
     CATEGORICAL_PROFILE_COLUMNS,
@@ -9,7 +10,7 @@ from bank_recommender.constants import (
     NUMERIC_PROFILE_COLUMNS,
     PRODUCT_COLUMNS,
 )
-from bank_recommender.data import build_temporal_pairs, stable_customer_sample
+from bank_recommender.data import build_temporal_pairs, read_snapshots
 
 
 def make_snapshot(customer: int, date: str, **products: int) -> dict:
@@ -68,11 +69,67 @@ def test_duplicate_snapshot_uses_last_record() -> None:
     assert pairs.targets.loc[0, product] == 0
 
 
-def test_customer_sampling_is_stable_across_rows_and_seeded() -> None:
-    ids = pd.Series([1, 1, 2, 2, 3, 3])
-    first = stable_customer_sample(ids, sample_fraction=0.5, random_seed=42)
-    second = stable_customer_sample(ids, sample_fraction=0.5, random_seed=42)
+def test_read_snapshots_loads_all_rows_in_one_dataset(
+    tmp_path,
+) -> None:
+    frame = pd.DataFrame(
+        [
+            make_snapshot(1, "2016-01-28"),
+            make_snapshot(1, "2016-02-28"),
+            make_snapshot(2, "2016-01-28"),
+        ]
+    )
+    path = tmp_path / "snapshots.csv"
+    frame.to_csv(path, index=False)
 
-    assert first.equals(second)
-    assert first.iloc[0] == first.iloc[1]
-    assert first.iloc[2] == first.iloc[3]
+    snapshots = read_snapshots(path)
+
+    assert len(snapshots) == 3
+    assert snapshots[ID_COLUMN].tolist() == [1, 1, 2]
+
+
+def test_read_snapshots_uses_one_read_without_chunks(
+    tmp_path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    frame = pd.DataFrame(
+        [
+            make_snapshot(1, "2016-01-28"),
+            make_snapshot(1, "2016-02-28"),
+        ]
+    )
+    path = tmp_path / "snapshots.csv"
+    path.write_text("placeholder", encoding="utf-8")
+    calls: list[dict] = []
+
+    def fake_read_csv(csv_path, **kwargs):
+        assert csv_path == path
+        calls.append(kwargs)
+        return frame.copy()
+
+    monkeypatch.setattr("bank_recommender.data.pd.read_csv", fake_read_csv)
+
+    snapshots = read_snapshots(path)
+
+    assert len(snapshots) == 2
+    assert len(calls) == 1
+    assert "chunksize" not in calls[0]
+
+
+def test_read_snapshots_can_filter_dates_after_full_read(tmp_path) -> None:
+    frame = pd.DataFrame(
+        [
+            make_snapshot(1, "2016-01-28"),
+            make_snapshot(1, "2016-02-28"),
+            make_snapshot(2, "2016-02-28"),
+        ]
+    )
+    path = tmp_path / "snapshots.csv"
+    frame.to_csv(path, index=False)
+
+    snapshots = read_snapshots(path, dates=["2016-02-28"])
+
+    assert len(snapshots) == 2
+    assert snapshots[DATE_COLUMN].dt.strftime("%Y-%m-%d").unique().tolist() == [
+        "2016-02-28"
+    ]

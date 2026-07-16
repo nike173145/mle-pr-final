@@ -1,4 +1,4 @@
-"""Memory-aware loading and leakage-safe temporal target construction."""
+"""Full-dataset loading and leakage-safe temporal target construction."""
 
 from __future__ import annotations
 
@@ -14,7 +14,6 @@ from bank_recommender.constants import (
     ID_COLUMN,
     NUMERIC_PROFILE_COLUMNS,
     PRODUCT_COLUMNS,
-    RANDOM_SEED,
     RAW_FEATURE_COLUMNS,
 )
 
@@ -44,28 +43,6 @@ class TemporalPairs:
             self.features.loc[valid_mask].reset_index(drop=True),
             self.targets.loc[valid_mask].reset_index(drop=True),
         )
-
-
-def _normalise_fraction(sample_fraction: float) -> tuple[int, int]:
-    if not 0 < sample_fraction <= 1:
-        raise ValueError("sample_fraction must be in (0, 1]")
-    buckets = 10_000
-    threshold = max(1, round(sample_fraction * buckets))
-    return threshold, buckets
-
-
-def stable_customer_sample(
-    customer_ids: pd.Series,
-    sample_fraction: float,
-    random_seed: int = RANDOM_SEED,
-) -> pd.Series:
-    """Select the same customers in every month without storing an ID list."""
-    threshold, buckets = _normalise_fraction(sample_fraction)
-    if threshold >= buckets:
-        return pd.Series(True, index=customer_ids.index)
-    ids = pd.to_numeric(customer_ids, errors="coerce").fillna(-1).astype("int64")
-    hashed = (ids * 1_103_515_245 + random_seed * 12_345) % buckets
-    return hashed < threshold
 
 
 def normalise_snapshots(frame: pd.DataFrame) -> pd.DataFrame:
@@ -106,14 +83,11 @@ def normalise_snapshots(frame: pd.DataFrame) -> pd.DataFrame:
     )
 
 
-def read_sampled_snapshots(
+def read_snapshots(
     csv_path: str | Path,
-    sample_fraction: float = 0.02,
-    random_seed: int = RANDOM_SEED,
-    chunksize: int = 200_000,
     dates: Iterable[str] | None = None,
 ) -> pd.DataFrame:
-    """Scan the large CSV in chunks and retain a stable customer sample."""
+    """Load the complete CSV in one read and return all requested snapshots."""
     path = Path(csv_path)
     if not path.is_file():
         raise FileNotFoundError(
@@ -122,30 +96,19 @@ def read_sampled_snapshots(
     selected_dates = set(dates) if dates is not None else None
     usecols = [ID_COLUMN, *RAW_FEATURE_COLUMNS]
     product_dtypes = {column: "float32" for column in PRODUCT_COLUMNS}
-    frames: list[pd.DataFrame] = []
-
-    reader = pd.read_csv(
+    frame = pd.read_csv(
         path,
         usecols=usecols,
         dtype=product_dtypes,
-        chunksize=chunksize,
         na_values=["NA", " NA", ""],
         skipinitialspace=True,
         low_memory=False,
     )
-    for chunk in reader:
-        if selected_dates is not None:
-            chunk = chunk[chunk[DATE_COLUMN].isin(selected_dates)]
-        if chunk.empty:
-            continue
-        mask = stable_customer_sample(chunk[ID_COLUMN], sample_fraction, random_seed)
-        sampled = chunk.loc[mask]
-        if not sampled.empty:
-            frames.append(sampled)
-
-    if not frames:
-        raise ValueError("Sampling produced no rows")
-    return normalise_snapshots(pd.concat(frames, ignore_index=True))
+    if selected_dates is not None:
+        frame = frame[frame[DATE_COLUMN].isin(selected_dates)]
+    if frame.empty:
+        raise ValueError("The dataset contains no requested rows")
+    return normalise_snapshots(frame)
 
 
 def build_temporal_pairs(snapshots: pd.DataFrame) -> TemporalPairs:

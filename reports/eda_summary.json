@@ -1,6 +1,7 @@
 {
   "source": "train_ver2.csv",
-  "scan_type": "full chunked scan",
+  "scan_type": "full in-memory pandas read",
+  "customer_scope": "all customers",
   "rows": 13647309,
   "columns": 48,
   "customer_profile_columns": 24,

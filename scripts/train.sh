@@ -12,11 +12,9 @@ fi
 
 PYTHON_BIN="${PYTHON_BIN:-python}"
 DATA_PATH="${DATA_PATH:-${PROJECT_ROOT}/train_ver2.csv}"
-SAMPLE_FRACTION="${SAMPLE_FRACTION:-0.02}"
 
 cd "${PROJECT_ROOT}"
 PYTHONPATH="${PROJECT_ROOT}/src${PYTHONPATH:+:${PYTHONPATH}}" \
   "${PYTHON_BIN}" -m bank_recommender.train \
   --data "${DATA_PATH}" \
-  --sample-fraction "${SAMPLE_FRACTION}" \
   "$@"

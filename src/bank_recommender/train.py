@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 from bank_recommender.constants import PRODUCT_COLUMNS, RANDOM_SEED
-from bank_recommender.data import build_temporal_pairs, read_sampled_snapshots
+from bank_recommender.data import build_temporal_pairs, read_snapshots
 from bank_recommender.metrics import evaluate_ranking
 from bank_recommender.model import BankProductRecommender, PopularityRecommender
 
@@ -100,7 +100,6 @@ def run_training(
     data_path: str | Path,
     artifact_path: str | Path = "ml_models/model.joblib",
     report_dir: str | Path = "reports",
-    sample_fraction: float = 0.02,
     validation_period: str = "2016-04",
     random_seed: int = RANDOM_SEED,
     alpha: float = 0.0001,
@@ -114,11 +113,7 @@ def run_training(
     random.seed(random_seed)
     np.random.seed(random_seed)
 
-    snapshots = read_sampled_snapshots(
-        data_path,
-        sample_fraction=sample_fraction,
-        random_seed=random_seed,
-    )
+    snapshots = read_snapshots(data_path)
     pairs = build_temporal_pairs(snapshots)
     x_train, y_train, x_valid, y_valid = pairs.split(validation_period)
 
@@ -180,7 +175,8 @@ def run_training(
         "training_period_max": periods.max(),
         "forecast_snapshot": str(snapshots["fecha_dato"].max().date()),
         "forecast_month": str(snapshots["fecha_dato"].max().to_period("M") + 1),
-        "sample_fraction": sample_fraction,
+        "data_scope": "full_dataset",
+        "loading_mode": "single_read",
         "random_seed": random_seed,
         "snapshot_rows": len(snapshots),
         "training_pairs": len(x_train),
@@ -205,7 +201,8 @@ def run_training(
     _write_json(report_path / "model_comparison.json", comparison)
 
     parameters = {
-        "sample_fraction": sample_fraction,
+        "data_scope": "full_dataset",
+        "loading_mode": "single_read",
         "validation_period": validation_period,
         "random_seed": random_seed,
         "alpha": alpha,
@@ -245,7 +242,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--data", default=os.getenv("DATA_PATH", "train_ver2.csv"))
     parser.add_argument("--artifact", default="ml_models/model.joblib")
     parser.add_argument("--report-dir", default="reports")
-    parser.add_argument("--sample-fraction", type=float, default=0.02)
     parser.add_argument("--validation-period", default="2016-04")
     parser.add_argument("--seed", type=int, default=RANDOM_SEED)
     parser.add_argument("--alpha", type=float, default=0.0001)
@@ -263,7 +259,6 @@ def main() -> None:
         data_path=args.data,
         artifact_path=args.artifact,
         report_dir=args.report_dir,
-        sample_fraction=args.sample_fraction,
         validation_period=args.validation_period,
         random_seed=args.seed,
         alpha=args.alpha,
