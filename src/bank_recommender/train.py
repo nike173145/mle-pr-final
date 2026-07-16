@@ -170,6 +170,7 @@ def run_training(
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "task": "rank products newly acquired in the next calendar month",
         "target_definition": "max(product[t+1] - product[t], 0)",
+        "pair_quality_rule": "all_product_flags_known_in_both_months",
         "validation_period": validation_period,
         "training_period_min": periods.min(),
         "training_period_max": periods.max(),
@@ -203,6 +204,7 @@ def run_training(
     parameters = {
         "data_scope": "full_dataset",
         "loading_mode": "single_read",
+        "pair_quality_rule": "all_product_flags_known_in_both_months",
         "validation_period": validation_period,
         "random_seed": random_seed,
         "alpha": alpha,

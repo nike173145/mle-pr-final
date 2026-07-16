@@ -13,7 +13,7 @@ from bank_recommender.constants import (
 from bank_recommender.data import build_temporal_pairs, read_snapshots
 
 
-def make_snapshot(customer: int, date: str, **products: int) -> dict:
+def make_snapshot(customer: int, date: str, **products: int | None) -> dict:
     row = {ID_COLUMN: customer, DATE_COLUMN: date}
     row.update({column: 0 for column in NUMERIC_PROFILE_COLUMNS})
     row.update({column: None for column in CATEGORICAL_PROFILE_COLUMNS})
@@ -51,6 +51,23 @@ def test_missing_calendar_month_is_not_paired() -> None:
     pairs = build_temporal_pairs(frame)
 
     assert pairs.features[ID_COLUMN].tolist() == [2]
+
+
+def test_unknown_product_state_is_not_treated_as_absence() -> None:
+    product = PRODUCT_COLUMNS[0]
+    frame = pd.DataFrame(
+        [
+            make_snapshot(1, "2016-01-28", **{product: None}),
+            make_snapshot(1, "2016-02-28", **{product: 1}),
+            make_snapshot(2, "2016-01-28", **{product: 0}),
+            make_snapshot(2, "2016-02-28", **{product: 1}),
+        ]
+    )
+
+    pairs = build_temporal_pairs(frame)
+
+    assert pairs.features[ID_COLUMN].tolist() == [2]
+    assert pairs.targets[product].tolist() == [1]
 
 
 def test_duplicate_snapshot_uses_last_record() -> None:

@@ -71,9 +71,8 @@ def normalise_snapshots(frame: pd.DataFrame) -> pd.DataFrame:
     for column in PRODUCT_COLUMNS:
         result[column] = (
             pd.to_numeric(result[column], errors="coerce")
-            .fillna(0)
-            .clip(0, 1)
-            .astype("int8")
+            .where(lambda values: values.isin([0, 1]))
+            .astype("Int8")
         )
 
     return (
@@ -112,8 +111,12 @@ def read_snapshots(
 
 
 def build_temporal_pairs(snapshots: pd.DataFrame) -> TemporalPairs:
-    """Build y=max(products[t+1]-products[t], 0) for adjacent months only."""
+    """Build targets from adjacent, fully observed product snapshots."""
     data = normalise_snapshots(snapshots)
+    complete_products = data[PRODUCT_COLUMNS].notna().all(axis=1)
+    data = data.loc[complete_products].reset_index(drop=True)
+    if data.empty:
+        raise ValueError("No snapshots have all product flags available")
     data["_period"] = data[DATE_COLUMN].dt.to_period("M")
     data["_next_period"] = data["_period"] + 1
 
